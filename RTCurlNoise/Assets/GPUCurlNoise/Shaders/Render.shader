@@ -65,11 +65,11 @@
 					{
 						v2f o;
 						//#if !defined(SHADER_API_OPENGL)
-						fixed4 posTex  = tex2Dlod (_PositionTex, float4(v.texcoord.xy,0,0));
+						fixed4 pos  = tex2Dlod (_PositionTex, float4(v.texcoord.xy,0,0));
 						//v.vertex.xyz = posTex.xyz;
-						v.vertex.x = (posTex.x - 0.50) + rand(v.texcoord.xy + v.vertex.z) * 0.005;
-						v.vertex.y = (posTex.y - 0.50) + rand(v.texcoord.xy + v.vertex.x) * 0.005;
-						v.vertex.z = (posTex.z) + rand(v.texcoord.xy + v.vertex.y) * 0.005;
+						v.vertex.x = pos.x;
+						v.vertex.y = pos.y;
+						v.vertex.z = pos.z;
 						//#endif
 						o.vertex   = mul(UNITY_MATRIX_MVP, v.vertex);
 						o.color    = v.color;
