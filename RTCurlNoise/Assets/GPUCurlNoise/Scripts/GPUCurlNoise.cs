@@ -10,8 +10,6 @@ public class GPUCurlNoise : MonoBehaviour {
 	private int MAX_PARTICLES_LIMIT = 65536;
 	
 	private RenderTexture[] _positionBuffer;
-	private RenderTexture[] _rotationBuffer;
-	//private RenderTexture[] _accelerationBuffer;
 	private RenderTexture[] _velocityBuffer;
 	
 	public Shader    KernelShader;
@@ -22,10 +20,10 @@ public class GPUCurlNoise : MonoBehaviour {
 	private Material _renderMaterial;
 	private Material _debugMaterial;
 	
-	private int _bufferWidth  = 1;
-	private int _bufferHeight = 1;
+	private int      _bufferWidth  = 1;
+	private int      _bufferHeight = 1;
 	
-	private int _pingPongIndex = 0;
+	private int      _pingPongIndex = 0;
 	
 	
 	private Mesh _mesh;
@@ -36,16 +34,12 @@ public class GPUCurlNoise : MonoBehaviour {
 	public  float SpaceScale;
 	public  float VelocityScale;
 	public  float Offset;
-	public  float DX;
-	public  float RDX;
 
 	public  float Speed;
 	public  float SpeedLimit;
 	
-	public float AreaSize           = 5.0f;
-
-	public Texture2D DebugTex;
-
+	public float  AreaSize           = 5.0f;
+	
 	// Debug
 	public bool IsDebug = false;
 	
@@ -110,7 +104,6 @@ public class GPUCurlNoise : MonoBehaviour {
 
 		// Render
 		_renderMaterial.SetTexture ("_PositionTex", _positionBuffer[_pingPongIndex == 0 ? 1 : 0]);
-		//_renderMaterial.SetTexture ("_PositionTex", DebugTex);
 		_renderMaterial.SetTexture ("_VelocityTex", _velocityBuffer[_pingPongIndex == 0 ? 1 : 0]);
 		Graphics.DrawMesh (_mesh, transform.position, transform.rotation, _renderMaterial, 0);
 		
@@ -124,7 +117,6 @@ public class GPUCurlNoise : MonoBehaviour {
 		
 		// Destroy Buffers
 		if (_positionBuffer != null) for (int i = 0; i < _positionBuffer.Length; i++) DestroyImmediate (_positionBuffer [i]);
-		if (_rotationBuffer != null) for (int i = 0; i < _rotationBuffer.Length; i++) DestroyImmediate (_rotationBuffer [i]);
 		if (_velocityBuffer != null) for (int i = 0; i < _velocityBuffer.Length; i++) DestroyImmediate (_velocityBuffer [i]);
 		
 		// Destroy Materials
@@ -142,17 +134,12 @@ public class GPUCurlNoise : MonoBehaviour {
 		
 		// Destroy Buffers
 		if (_positionBuffer != null) for (int i = 0; i < _positionBuffer.Length; i++) DestroyImmediate (_positionBuffer [i]);
-		if (_rotationBuffer != null) for (int i = 0; i < _rotationBuffer.Length; i++) DestroyImmediate (_rotationBuffer [i]);
-		
+
 		// Create Buffers
 		_positionBuffer = new RenderTexture[2];
-		_rotationBuffer = new RenderTexture[2];
-		//_accelerationBuffer = new RenderTexture[2];
 		_velocityBuffer = new RenderTexture[2];
 		_positionBuffer[0] = _createBuffer ();
 		_positionBuffer[1] = _createBuffer ();
-		_rotationBuffer[0] = _createBuffer ();
-		_rotationBuffer[1] = _createBuffer ();
 		_velocityBuffer[0] = _createBuffer ();
 		_velocityBuffer[1] = _createBuffer ();
 		
@@ -165,7 +152,14 @@ public class GPUCurlNoise : MonoBehaviour {
 		
 		for (int x = 0; x < _bufferWidth; x++) {
 			for (int y = 0; y < _bufferHeight; y++) {
-				buff.SetPixel (x, y, new Color (Random.Range (0, 1.0f), Random.Range (0, 1.0f), Random.Range (0, 1.0f), 1.0f));
+				buff.SetPixel (x, y, 
+					new Color (
+						Random.Range (0, 1.0f),
+						Random.Range (0, 1.0f),
+						Random.Range (0, 1.0f),
+						1.0f
+					)
+				);
 			}
 		}
 		buff.Apply ();
@@ -176,9 +170,6 @@ public class GPUCurlNoise : MonoBehaviour {
 		
 		Graphics.Blit (null, _positionBuffer [0], _kernelMaterial, 0);
 		_positionBuffer [1]     = _positionBuffer [0];
-		
-		Graphics.Blit (null, _rotationBuffer [0], _kernelMaterial, 1);
-		_rotationBuffer [1]     = _rotationBuffer [0];
 
 		Graphics.Blit (null, _velocityBuffer [0], _kernelMaterial, 2);
 		_velocityBuffer [1]     = _velocityBuffer [0];
@@ -198,11 +189,6 @@ public class GPUCurlNoise : MonoBehaviour {
 		
 		for (int i = 0; i < vertices.Length; i++) {
 			vertices[i] = Random.insideUnitSphere;
-			//vertices[i] = new Vector3 (
-			//	Random.Range (-1.0f, 1.0f),
-			//	Random.Range (-1.0f, 1.0f),
-			//	Random.Range (-1.0f, 1.0f)
-			//);
 		}
 		
 		for (int i = 0; i < normals.Length; i++) {
@@ -220,7 +206,11 @@ public class GPUCurlNoise : MonoBehaviour {
 		}
 		
 		for (int i = 0; i < colors.Length; i++) {
-			colors[i] = new Color(Random.Range (0, 1.0f), Random.Range (0, 1.0f), Random.Range (0, 1.0f), 1.0f);
+			colors[i] = new Color(
+				Random.Range (0, 1.0f),
+				Random.Range (0, 1.0f),
+				Random.Range (0, 1.0f),
+				1.0f);
 		}
 		
 		mesh.vertices = vertices;
@@ -264,12 +254,9 @@ public class GPUCurlNoise : MonoBehaviour {
 			
 			Rect r1 = new Rect(0,   0, 64, 64);
 			Rect r2 = new Rect(0,  64, 64, 64);
-			//Rect r3 = new Rect(0, 128, 64, 64);
-			Rect r4 = new Rect(0, 192, 64, 64);
-			
+
 			if (_positionBuffer     != null && _positionBuffer.Length     > 0) Graphics.DrawTexture (r1, _positionBuffer[0],     _debugMaterial);
-			if (_rotationBuffer     != null && _rotationBuffer.Length     > 0) Graphics.DrawTexture (r2, _rotationBuffer[0],     _debugMaterial);
-			if (_velocityBuffer     != null && _velocityBuffer.Length     > 0) Graphics.DrawTexture (r4, _velocityBuffer[0],     _debugMaterial);
+			if (_velocityBuffer     != null && _velocityBuffer.Length     > 0) Graphics.DrawTexture (r2, _velocityBuffer[0],     _debugMaterial);
 		}
 		
 	}
