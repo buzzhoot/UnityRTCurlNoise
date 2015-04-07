@@ -12,9 +12,9 @@ public class GPUCurlNoise : MonoBehaviour {
 	private RenderTexture[] _positionBuffer;
 	private RenderTexture[] _velocityBuffer;
 	
-	public Shader    KernelShader;
-	public Shader    RenderShader;
-	public Shader    DebugShader;
+	public  Shader   KernelShader;
+	public  Shader   RenderShader;
+	public  Shader   DebugShader;
 	
 	private Material _kernelMaterial;
 	private Material _renderMaterial;
@@ -24,8 +24,8 @@ public class GPUCurlNoise : MonoBehaviour {
 	private int      _bufferHeight = 1;
 	
 	private int      _pingPongIndex = 0;
-	
-	
+
+
 	private Mesh _mesh;
 	private bool _needsReset = true;
 	
